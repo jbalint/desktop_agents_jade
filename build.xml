@@ -1,0 +1,24 @@
+<project name="d-a-g" default="build">
+  <path id="cp">
+	<fileset dir="lib">
+	  <include name="**/*.jar"/>
+	</fileset>
+	<pathelement path="build"/>
+  </path>
+
+  <target name="build">
+	<mkdir dir="build"/>
+	<javac srcdir="src/main/java"
+		   destdir="build"
+		   debug="true"
+		   classpathref="cp">
+	</javac>
+  </target>
+
+  <target name="run-wmiir-event-reader">
+	<java classname="jade.desktop.wm.WmiirEventReader"
+		  fork="true"
+		  classpathref="cp">
+	</java>
+  </target>
+</project>
