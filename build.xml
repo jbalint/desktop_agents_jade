@@ -15,10 +15,24 @@
 	</javac>
   </target>
 
-  <target name="run-wmiir-event-reader">
+  <target name="run-wmiir-event-reader" depends="build">
 	<java classname="jade.desktop.wm.WmiirEventReader"
 		  fork="true"
 		  classpathref="cp">
+	</java>
+  </target>
+
+  <target name="run-jade-with-wmii" depends="build">
+	<java classname="jade.Boot"
+		  fork="true"
+		  classpathref="cp">
+	  <!-- chooses VPN tunnel by default for some reason O.o -->
+	  <arg value="-local-host"/>
+	  <arg value="192.168.1.28"/>
+
+	  <arg value="-gui"/>
+
+	  <arg value="wmii:jade.desktop.wm.WmiiWindowManagerAgent"/>
 	</java>
   </target>
 </project>

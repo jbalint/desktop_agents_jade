@@ -5,6 +5,9 @@ import java.io.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * A reader of `wmii' events. Using the `wmiir' commands, this object reads events from the stream.
+ */
 public class WmiirEventReader {
 	private static final Logger log = LoggerFactory.getLogger(WmiirEventReader.class);
 	Process p;
