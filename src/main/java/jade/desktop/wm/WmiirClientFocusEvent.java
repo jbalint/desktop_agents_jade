@@ -1,5 +1,6 @@
 package jade.desktop.wm;
 
+// TODO - should be generalized to wm-focus event
 public class WmiirClientFocusEvent extends WmiirEvent {
 	private String clientId;
 
@@ -12,5 +13,9 @@ public class WmiirClientFocusEvent extends WmiirEvent {
 
 	public String getClientId() {
 		return this.clientId;
+	}
+
+	public String toString() {
+		return WmiirClientFocusEvent.class.getName() + "(" + this.timestamp + "): " + this.clientId;
 	}
 }

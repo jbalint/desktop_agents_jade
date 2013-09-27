@@ -10,26 +10,39 @@ import org.slf4j.LoggerFactory;
  */
 public class WmiirEventReader {
 	private static final Logger log = LoggerFactory.getLogger(WmiirEventReader.class);
-	Process p;
-	BufferedReader reader;
+
+	private Process p;
+	private BufferedReader reader;
 
 	public WmiirEventReader() throws IOException {
 		p = new ProcessBuilder("wmiir", "read", "/event").redirectErrorStream(true).start();
 		reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+		log.debug("Started `wmiir' reader");
 	}
 
-	public void close() {
+	public void close() throws IOException {
 		p.destroy();
+		reader.close();
 	}
 
 	public String readEvent() throws IOException {
-		return reader.readLine();
+		String event = reader.readLine();
+		return event;
 	}
 
 	public static void main(String args[]) throws Exception {
+		System.out.println("All tags: " + Wmiir.getTagNames());
+		System.out.println("Current tag: '" + Wmiir.getCurrentTagName() + "' (" + Wmiir.getCurrentTagName().length() + ")");
 		WmiirEventReader rdr = new WmiirEventReader();
 		while (true) {
-			System.out.println("Wmiir event: " + rdr.readEvent());
+			WmiirEvent ev = WmiirEvent.parse(rdr.readEvent().split(" "));
+			System.out.println("Wmiir event: " + ev);
+			if (ev != null &&
+				WmiirClientFocusEvent.class.isAssignableFrom(ev.getClass())) {
+				WmiirClientFocusEvent ev2 = (WmiirClientFocusEvent) ev;
+				System.out.println("\t client label: " + Wmiir.getClientLabel(ev2.getClientId()));
+				System.out.println("\t client tags: " + Wmiir.getClientTagNames(ev2.getClientId()));
+			}
 		}
 	}
 }

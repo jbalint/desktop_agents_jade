@@ -4,6 +4,7 @@
 	  <include name="**/*.jar"/>
 	</fileset>
 	<pathelement path="build"/>
+	<pathelement path="../classes"/>
   </path>
 
   <target name="build">
@@ -22,7 +23,12 @@
 	</java>
   </target>
 
-  <target name="run-jade-with-wmii" depends="build">
+  <target name="run-jade" depends="build">
+	<!-- TODO the list of agents needs work... -->
+	<!-- would be nice if stupid JADE took the whole remaining set of arguments as Agents -->
+	<property name="agent0" value="wmii:jade.desktop.wm.WmiiWindowManagerAgent"/>
+	<property name="agent1" value="receiver:examples.topic.TopicMessageReceiverAgent"/>
+
 	<java classname="jade.Boot"
 		  fork="true"
 		  classpathref="cp">
@@ -30,9 +36,13 @@
 	  <arg value="-local-host"/>
 	  <arg value="192.168.1.28"/>
 
+	  <arg value="-services"/>
+	  <arg value="jade.core.event.NotificationService;jade.core.messaging.TopicManagementService"/>
+
 	  <arg value="-gui"/>
 
-	  <arg value="wmii:jade.desktop.wm.WmiiWindowManagerAgent"/>
+	  <arg value="${agent0};${agent1}"/>
+
 	</java>
   </target>
 </project>

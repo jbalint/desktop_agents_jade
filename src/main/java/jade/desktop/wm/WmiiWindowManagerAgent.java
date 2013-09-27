@@ -4,7 +4,10 @@ import java.io.IOException;
 
 import jade.core.Agent;
 import jade.core.AID;
+import jade.domain.FIPANames;
 import jade.lang.acl.ACLMessage;
+import jade.lang.acl.MessageTemplate;
+import jade.proto.states.MsgReceiver;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +32,25 @@ public class WmiiWindowManagerAgent extends Agent {
 			}
 		};
 
+	private void createClientFocusMessageHandler() {
+		addBehaviour(new WmiiClientFocusMsgReceiver(this));
+	}
+
 	protected void setup() {
+		createClientFocusMessageHandler();
+
+		MessageTemplate subMt = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.SUBSCRIBE),
+													MessageTemplate.MatchProtocol(FIPANames.InteractionProtocol.FIPA_SUBSCRIBE));
+		addBehaviour(new MsgReceiver(this, subMt, MsgReceiver.INFINITE, null, "..KEY..") {
+				protected void handleMessage(ACLMessage msg) {
+					try {
+						System.out.println(msg.getContentObject());
+					} catch(Exception ex) {
+						ex.printStackTrace();
+					}
+					reset(this.template, this.deadline, getDataStore(), this.receivedMsgKey);
+				}
+			});
 		try {
 			wmiirEventReader = new WmiirEventReader();
 			wmiirReadThread.start();
@@ -49,7 +70,8 @@ public class WmiiWindowManagerAgent extends Agent {
 			return;
 		ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
 		msg.setContentObject(wmiirEvent);
-		msg.addReceiver(new AID("da0", AID.ISLOCALNAME));
+		msg.addReceiver(new AID("wmii", AID.ISLOCALNAME));
+		log.debug("posting wmiir-event {}", msg);
 		send(msg);
 	}
 }
