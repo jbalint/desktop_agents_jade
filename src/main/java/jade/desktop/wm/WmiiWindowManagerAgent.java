@@ -21,7 +21,8 @@ public class WmiiWindowManagerAgent extends Agent {
 				while (true) {
 					try {
 						String event = wmiirEventReader.readEvent();
-						postWmiirEvent(event);
+						if (event != null)
+							postWmiirEvent(event);
 					} catch(/*IO*/Exception ex) {
 						// handle ALL exceptions to keep thread alive
 						log.error("Failed to read from WmiirEventReader", ex);
@@ -39,18 +40,18 @@ public class WmiiWindowManagerAgent extends Agent {
 	protected void setup() {
 		createClientFocusMessageHandler();
 
-		MessageTemplate subMt = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.SUBSCRIBE),
-													MessageTemplate.MatchProtocol(FIPANames.InteractionProtocol.FIPA_SUBSCRIBE));
-		addBehaviour(new MsgReceiver(this, subMt, MsgReceiver.INFINITE, null, "..KEY..") {
-				protected void handleMessage(ACLMessage msg) {
-					try {
-						System.out.println(msg.getContentObject());
-					} catch(Exception ex) {
-						ex.printStackTrace();
-					}
-					reset(this.template, this.deadline, getDataStore(), this.receivedMsgKey);
-				}
-			});
+		// MessageTemplate subMt = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.SUBSCRIBE),
+		// 											MessageTemplate.MatchProtocol(FIPANames.InteractionProtocol.FIPA_SUBSCRIBE));
+		// addBehaviour(new MsgReceiver(this, subMt, MsgReceiver.INFINITE, null, "..KEY..") {
+		// 		protected void handleMessage(ACLMessage msg) {
+		// 			try {
+		// 				System.out.println(msg.getContentObject());
+		// 			} catch(Exception ex) {
+		// 				ex.printStackTrace();
+		// 			}
+		// 			reset(this.template, this.deadline, getDataStore(), this.receivedMsgKey);
+		// 		}
+		// 	});
 		try {
 			wmiirEventReader = new WmiirEventReader();
 			wmiirReadThread.start();
@@ -72,6 +73,7 @@ public class WmiiWindowManagerAgent extends Agent {
 		msg.setContentObject(wmiirEvent);
 		msg.addReceiver(new AID("wmii", AID.ISLOCALNAME));
 		log.debug("posting wmiir-event {}", msg);
+		// TODO convert this topic
 		send(msg);
 	}
 }

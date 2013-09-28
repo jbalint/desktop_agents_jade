@@ -28,6 +28,8 @@
 	<!-- would be nice if stupid JADE took the whole remaining set of arguments as Agents -->
 	<property name="agent0" value="wmii:jade.desktop.wm.WmiiWindowManagerAgent"/>
 	<property name="agent1" value="receiver:examples.topic.TopicMessageReceiverAgent"/>
+	<property name="agent2" value="config:jade.data.config.ConfigAgent"/>
+	<property name="agent3" value="indri:jade.data.index.IndriAgent"/>
 
 	<java classname="jade.Boot"
 		  fork="true"
@@ -39,9 +41,11 @@
 	  <arg value="-services"/>
 	  <arg value="jade.core.event.NotificationService;jade.core.messaging.TopicManagementService"/>
 
+<!--
+-->
 	  <arg value="-gui"/>
 
-	  <arg value="${agent0};${agent1}"/>
+	  <arg value="${agent0};${agent1};${agent2};${agent3}"/>
 
 	</java>
   </target>
